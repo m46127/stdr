@@ -126,10 +126,21 @@ def create_pdf_files(uploaded_file):
 
         # 定期販売商品の描画
         y = h - 400  # Y座標の初期値
+
+        # ヘッダーの描画
+        cv.setFont('mmt', 10)
+        cv.drawString(60, y, '商品コード - 商品名 (数量, 単価)')
+        cv.setLineWidth(0.5)  # ラインの幅を設定
+        cv.line(50, y - 5, w - 50, y - 5)  # 罫線を引く
+
+        y -= 20  # ヘッダーの下に移動
+
         for item in regular_sale:
             cv.setFont('mmt', 10)
             cv.drawString(60, y, f"{item['code']} - {item['name']} ({int(item['count'])}個, {int(item['unit_price'])}円)")  # 商品コード、商品名、数量、単価の描画
             y -= 15  # Y座標を下げて次の行に移動
+            cv.line(50, y - 2, w - 50, y - 2)  # 罫線を引く
+
 
 
         # プレゼント商品の描画
