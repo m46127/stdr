@@ -130,18 +130,23 @@ def create_pdf_files(uploaded_file):
         # ヘッダーの描画
         cv.setFont('mmt', 10)
         cv.drawString(60, y, '商品コード - 商品名 (数量, 単価)')
-        cv.setLineWidth(0.5)  # ラインの幅を設定
-        cv.line(50, y - 5, w - 50, y - 5)  # 罫線を引く
+
+        # 表の描画
+        x0, y0 = 50, y  # 表の左上の座標（ヘッダーのY座標と同じ）
+        x1, y1 = w - 50, y0 - 20 * (len(regular_sale) + 1)  # 表の右下の座標
+        cv.rect(x0, y1, x1 - x0, y0 - y1)  # 表の外枠を描く
+
+        # 縦の罫線を引く
+        for i in range(1, len(regular_sale) + 1):
+            y_line = y0 - 20 * i
+            cv.line(x0, y_line, x1, y_line)  # 横の罫線を引く
 
         y -= 20  # ヘッダーの下に移動
 
         for item in regular_sale:
             cv.setFont('mmt', 10)
             cv.drawString(60, y, f"{item['code']} - {item['name']} ({int(item['count'])}個, {int(item['unit_price'])}円)")  # 商品コード、商品名、数量、単価の描画
-            y -= 15  # Y座標を下げて次の行に移動
-            cv.line(50, y - 2, w - 50, y - 2)  # 罫線を引く
-
-
+            y -= 20  # Y座標を下げて次の行に移動
 
         # プレゼント商品の描画
         y = h - 235  # Y座標の初期値
