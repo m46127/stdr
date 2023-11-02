@@ -3,7 +3,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 # メニューの選択肢を定義
-menu_options = ["トップページ", "ピッキング", "CSV並び替え", "PDF作成"]
+menu_options = ["トップページ", "ピッキング", "CSV並び替え", "PDF作成", "在庫"]
 
 # サイドバーでオプションメニューを表示
 selected_option = option_menu("メインメニュー", menu_options, icons=['house', 'upload', 'sort', 'file-pdf'], menu_icon="cast", default_index=0)
@@ -28,3 +28,8 @@ elif selected_option == "PDF作成":
     # pdf.py の内容をインポートして実行
     from pdf import main as pdf_main
     pdf_main()
+
+elif selected_option == "在庫":
+    # Inventory.py の内容をインポートして実行
+    from Inventory import main as Inventory_main
+    Inventory_main()
