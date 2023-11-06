@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
-from io import StringIO
+# StringIOは使わないので削除し、BytesIOのみをインポート
+from io import BytesIO
 import math
 
 UPLOAD_FOLDER = 'uploads'
@@ -51,10 +52,18 @@ def picking_page():
             picking_datas_df = pd.DataFrame(picking_datas[1:], columns=picking_datas[0])
             picking_datas_df = picking_datas_df.sort_values(by=["商品タイプ", "合計数量"], ascending=[False, False])
 
-            textStream = StringIO()
-            picking_datas_df.to_csv(textStream, header=True, index=False, encoding='utf-8')
+            # Excelファイルとしてストリームに書き込む
+            excel_stream = BytesIO()
+            picking_datas_df.to_excel(excel_stream, index=False)  # Excelファイルとしてデータフレームを書き出し
+            excel_stream.seek(0)  # ストリームの位置を先頭に戻す
 
-            st.download_button(label="CSVファイルをダウンロード", data=textStream.getvalue(), file_name='picking.csv', mime='text/csv')
+            # ダウンロードボタンを追加するが、今度はExcelファイルとして
+            st.download_button(
+                label="Excelファイルをダウンロード",
+                data=excel_stream,
+                file_name='picking_list.xlsx',
+                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
         else:
             st.error('許可されていないファイル形式です。CSVファイルをアップロードしてください。')
     else:
