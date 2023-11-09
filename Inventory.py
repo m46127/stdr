@@ -2,6 +2,7 @@
 
 import streamlit as st
 import pandas as pd
+import numpy as np  # numpyをインポート
 import base64
 import io
 
@@ -36,7 +37,9 @@ def main():
         
         # 在庫表とピッキングリストをマージ
         merged_df = pd.merge(inventory_df, picking_df, on='コード', how='left')
-        merged_df['数量'].fillna(0, inplace=True)
+        
+        # 0の値をNaNに置き換えて空白にする
+        merged_df['数量'].replace(0, np.nan, inplace=True)
         
         # ファイルをダウンロードするためのリンクを作成
         output = io.BytesIO()
