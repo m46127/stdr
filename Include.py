@@ -34,7 +34,9 @@ def main():
                 additional_count += row_count - 5
             total_count += row_count
 
-        # 結果を表示
+        # 結果を整数に変換して表示
+        total_count = int(total_count)
+        additional_count = int(additional_count)
         st.write(f"同梱物の合計数量: {total_count}, 追加数量: {additional_count}")
 
     else:
