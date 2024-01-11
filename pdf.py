@@ -84,7 +84,9 @@ def create_pdf_files(uploaded_file):
         cv.drawString(350, h - 105, str(record['ご依頼主住所１']))
         cv.drawString(350, h - 120, str(record['ご依頼主住所２']))
         cv.drawString(350, h - 135, 'TEL 0120-444-636(平日9:30~17:30)')
-        cv.rect(305, h - 200, 260, 50)  # 罫線を追加
+        cv.drawString(310, h - 170, 'プレゼント内容')
+        cv.rect(305, h - 250, 260, 100)
+
 
 
         # QR1を表示
@@ -131,15 +133,6 @@ def create_pdf_files(uploaded_file):
         cv.setFont('mmt', 10)
         cv.drawString(60, y, '商品コード - 商品名 (数量, 単価)')
 
-        # 表の描画
-        x0, y0 = 50, y  # 表の左上の座標（ヘッダーのY座標と同じ）
-        x1, y1 = w - 50, y0 - 20 * (len(regular_sale) + 1)  # 表の右下の座標
-        cv.rect(x0, y1, x1 - x0, y0 - y1)  # 表の外枠を描く
-
-        # 縦の罫線を引く
-        for i in range(1, len(regular_sale) + 1):
-            y_line = y0 - 20 * i
-            cv.line(x0, y_line, x1, y_line)  # 横の罫線を引く
 
         y -= 20  # ヘッダーの下に移動
 
@@ -149,14 +142,14 @@ def create_pdf_files(uploaded_file):
             y -= 20  # Y座標を下げて次の行に移動
 
         # プレゼント商品の描画
-        y = h - 235  # Y座標の初期値
+        y = h - 180  # Y座標の初期値
         for item in present:
             cv.setFont('mmt', 8)
             cv.drawString(310, y, f"{item['name']} ({int(item['count'])}個)")  # 商品コード、商品名、数量の描画
             y -= 10  # Y座標を下げて次の行に移動
 
         # 同梱物の描画
-        y = h - 700  # Y座標の初期値
+        y = h - 600  # Y座標の初期値
         for item in flyer:
             cv.setFont('mmt', 8)
             cv.drawString(350, y, f"{item['code']} - ({int(item['count'])}個)")  # 商品コード、商品名、数量の描画
