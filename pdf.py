@@ -104,12 +104,12 @@ def create_pdf_files(uploaded_file):
         height = 60
         cv.drawImage(image_path, x, y, width, height)
         # 画像を表示
-        image_path = './image/pay1.png'  # 画像のパスを指定してください
-        x = 30
-        y = h - 800
-        width = 290
-        height = 120
-        cv.drawImage(image_path, x, y, width, height)
+        #image_path = './image/QR1.png'  # 画像のパスを指定してください
+        #x = 30
+        #y = h - 800
+        #width = 290
+        #height = 120
+        #cv.drawImage(image_path, x, y, width, height)
 
 
         
