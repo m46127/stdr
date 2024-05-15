@@ -8,6 +8,7 @@ menu_options = ["トップページ", "ピッキング", "CSV並び替え", "PDF
 # サイドバーでオプションメニューを表示
 selected_option = option_menu("メインメニュー", menu_options, icons=['house', 'upload', 'sort', 'file-pdf', 'layers', 'box'], menu_icon="cast", default_index=0)
 
+
 # 選択肢に応じて表示するページを変更
 if selected_option == "トップページ":
     # トップページの内容
