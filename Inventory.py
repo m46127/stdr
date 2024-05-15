@@ -1,10 +1,9 @@
-# Inventory.py
-
 import streamlit as st
 import pandas as pd
-import numpy as np  # numpyをインポート
+import numpy as np
 import base64
 import io
+import chardet  # chardetをインポート
 
 def get_binary_file_downloader_html(bin_file, file_label='File'):
     bin_str = base64.b64encode(bin_file).decode()
@@ -17,8 +16,15 @@ def main():
     uploaded_file_excel = st.file_uploader("Choose an Excel file", type="xlsx")
     
     if uploaded_file_csv is not None and uploaded_file_excel is not None:
-        # CSVファイルを読み込む
-        picking_df = pd.read_csv(uploaded_file_csv, encoding='shift_jis')
+        # CSVファイルのエンコーディングを検出
+        uploaded_file_csv.seek(0)  # ストリームの先頭に移動
+        raw_data = uploaded_file_csv.read()
+        result = chardet.detect(raw_data)
+        detected_encoding = result['encoding']
+        uploaded_file_csv.seek(0)  # ストリームの先頭に再度移動
+        
+        # 検出されたエンコーディングでCSVファイルを読み込む
+        picking_df = pd.read_csv(uploaded_file_csv, encoding=detected_encoding)
         
         # 'コード'と'数量'の列が存在するか確認
         if 'コード' in picking_df.columns and '数量' in picking_df.columns:
