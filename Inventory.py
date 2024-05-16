@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import base64
 import io
-import chardet
+import chardet  # chardetをインポート
 
 def get_binary_file_downloader_html(bin_file, file_label='File'):
     bin_str = base64.b64encode(bin_file).decode()
@@ -42,18 +42,7 @@ def main():
         inventory_df['コード'] = inventory_df['コード'].astype(str).str.strip().str.upper()
         
         # 在庫表とピッキングリストをマージ
-        merged_df = pd.merge(inventory_df, picking_df, on='コード', how='right', indicator=True)
-        
-        # 該当がなかったコードと数量を表示
-        no_match_df = merged_df[merged_df['_merge'] == 'right_only']
-        if not no_match_df.empty:
-            st.write("該当がなかったコード:")
-            st.write(no_match_df[['コード', '数量']])
-        else:
-            st.write("すべてのコードが一致しました。")
-        
-        # 在庫表とピッキングリストをマージ (該当がなかったコードを除外)
-        merged_df = merged_df[merged_df['_merge'] == 'both'].drop(columns=['_merge'])
+        merged_df = pd.merge(inventory_df, picking_df, on='コード', how='left')
         
         # 0の値をNaNに置き換えて空白にする
         merged_df['数量'].replace(0, np.nan, inplace=True)
