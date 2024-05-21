@@ -82,6 +82,9 @@ def create_pdf_files(uploaded_file):
         cv.drawString(350, h - 135, 'TEL 0120-444-636(平日9:30~17:30)')
         cv.drawString(310, h - 170, 'プレゼント内容')
         cv.rect(305, h - 250, 260, 100)
+        cv.drawString(35, h - 690, '【備考】')
+        cv.rect(30, h - 800, 500, 140)
+        cv.drawString(350, h - 690, '＜同梱物＞')
 
         # QR1を表示
         image_path = './image/QR1.jpg'  # 画像のパスを指定してください
@@ -199,7 +202,7 @@ def merge_pdf_in_dir(dir_path, dst_path):
     l = glob.glob(os.path.join(dir_path, '*.pdf'))
     l.sort()
 
-    merger = PdfMerger()  # 修正点
+    merger = PdfMerger()
     for p in l:
         if not PdfReader(p).is_encrypted:
             merger.append(p)
