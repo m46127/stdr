@@ -6,13 +6,11 @@ import os
 import shutil
 from PyPDF2 import PdfMerger, PdfReader
 import glob
-from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib import colors
 from reportlab.platypus import Table, TableStyle
 import chardet 
-
-
 
 w, h = portrait(A4)
 
@@ -51,11 +49,9 @@ def create_pdf_files(uploaded_file):
         cv.setFillColorRGB(0, 0, 0)
         # 以下、PDF生成の処理...
 
-
         # フォントの設定
         cv.setFont('mmt', 12)
 
-        
         # データの描画
         customer_id = record['顧客ID']
         if pd.isna(customer_id):
@@ -72,11 +68,11 @@ def create_pdf_files(uploaded_file):
         cv.drawString(30, h - 140, f"{record['お届け先名称１']} 様")
         cv.drawString(30, h - 155, f"〒{record['お届け先郵便番号']}")
         cv.drawString(30, h - 170, str(record['お届け先住所１']))
+        cv.drawString(30, h - 185, str(record['お届け先住所２']))
         cv.setFont('mmt', 8)
         cv.drawString(30, h - 220, f"次回お届け予定日:{record['次回お届け予定日']}")
         cv.drawString(30, h - 235, '【お申込み内容の確認・変更、各種申請ついて】')
         cv.drawString(30, h - 250, ' 次回お届け予定日の10日前までにマイページ')
-        #cv.drawString(400, h - 40, f"{record['お届け先名称１']} 様")
         cv.setFont('mmt', 10)
         cv.drawString(350, h - 60, str(record['ご依頼主名称１']))
         cv.drawString(350, h - 75, '登録番号:T101001102642')
@@ -86,8 +82,9 @@ def create_pdf_files(uploaded_file):
         cv.drawString(350, h - 135, 'TEL 0120-444-636(平日9:30~17:30)')
         cv.drawString(310, h - 170, 'プレゼント内容')
         cv.rect(305, h - 250, 260, 100)
-
-
+        cv.drawString(35, h - 690, '【備考】')
+        cv.rect(30, h - 800, 500, 140)
+        cv.drawString(350, h - 690, '＜同梱物＞')
 
         # QR1を表示
         image_path = './image/QR1.jpg'  # 画像のパスを指定してください
@@ -99,32 +96,23 @@ def create_pdf_files(uploaded_file):
         #QR2を表示
         image_path = './image/QR2.png'  # 画像のパスを指定してください
         x = 210
-        y = h - 600
+        y = h - 370
         width = 60
         height = 60
         cv.drawImage(image_path, x, y, width, height)
-        # 画像を表示
-        #image_path = './image/QR1.png'  # 画像のパスを指定してください
-        #x = 30
-        #y = h - 800
-        #width = 290
-        #height = 120
-        #cv.drawImage(image_path, x, y, width, height)
 
-
-        
         # 商品情報の取得
-        items = get_items(record)  # 「get_items」関数の実装が不明なため仮の関数としています。
+        items = get_items(record)
         regular_sale = []
         present = []
         flyer = []
         for item in items:
-                if item['type'] == '定期販売':
-                    regular_sale.append(item)
-                elif item['type'] == 'プレゼント':
-                    present.append(item)
-                else:
-                    flyer.append(item)
+            if item['type'] == '定期販売':
+                regular_sale.append(item)
+            elif item['type'] == 'プレゼント':
+                present.append(item)
+            else:
+                flyer.append(item)
 
         # 定期販売商品の描画
         y = h - 400  # Y座標の初期値
@@ -133,12 +121,32 @@ def create_pdf_files(uploaded_file):
         cv.setFont('mmt', 10)
         cv.drawString(60, y, '商品コード - 商品名 (数量, 単価)')
 
+        # ヘッダーに枠を追加
+        cv.rect(50, y - 5, 400, 20, fill=False)
 
         y -= 20  # ヘッダーの下に移動
 
-        for item in regular_sale:
+        # 定期販売商品の枠と背景色の描画
+        for idx, item in enumerate(regular_sale):
+            background_color = colors.whitesmoke if idx % 2 == 0 else colors.lightgrey
+            cv.setFillColor(background_color)
+            cv.rect(50, y - 5, 400, 20, fill=True, stroke=False)
+            cv.setFillColor(colors.black)
             cv.setFont('mmt', 10)
             cv.drawString(60, y, f"{item['code']} - {item['name']} ({int(item['count'])}個, {int(item['unit_price'])}円)")  # 商品コード、商品名、数量、単価の描画
+            cv.rect(50, y - 5, 400, 20, fill=False)  # 枠の描画
+            y -= 20  # Y座標を下げて次の行に移動
+
+
+        # 定期販売商品の枠と背景色の描画
+        for idx, item in enumerate(regular_sale):
+            background_color = colors.whitesmoke if idx % 2 == 0 else colors.lightgrey
+            cv.setFillColor(background_color)
+            cv.rect(50, y - 5, 400, 20, fill=True, stroke=False)
+            cv.setFillColor(colors.black)
+            cv.setFont('mmt', 10)
+            cv.drawString(60, y, f"{item['code']} - {item['name']} ({int(item['count'])}個, {int(item['unit_price'])}円)")  # 商品コード、商品名、数量、単価の描画
+            cv.rect(50, y - 5, 400, 20, fill=False)  # 枠の描画
             y -= 20  # Y座標を下げて次の行に移動
 
         # プレゼント商品の描画
@@ -149,19 +157,16 @@ def create_pdf_files(uploaded_file):
             y -= 10  # Y座標を下げて次の行に移動
 
         # 同梱物の描画
-        y = h - 600  # Y座標の初期値
+        y = h - 700  # Y座標の初期値
         for item in flyer:
             cv.setFont('mmt', 8)
             cv.drawString(350, y, f"{item['code']} - ({int(item['count'])}個)")  # 商品コード、商品名、数量の描画
             y -= 10  # Y座標を下げて次の行に移動
 
-
-
         # PDFの保存
         cv.showPage()
         cv.save()
     return output_files
-
 
 def get_items(record):
     items_dict = {}
@@ -193,12 +198,11 @@ def get_items(record):
     items = list(items_dict.values())
     return items
 
-
 def merge_pdf_in_dir(dir_path, dst_path):
     l = glob.glob(os.path.join(dir_path, '*.pdf'))
     l.sort()
 
-    merger = PdfMerger()  # 修正点
+    merger = PdfMerger()
     for p in l:
         if not PdfReader(p).is_encrypted:
             merger.append(p)
