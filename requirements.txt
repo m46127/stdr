@@ -1,3 +1,10 @@
+# python=3.10
+streamlit>=1.28.0,<1.40.0  # 最新すぎると不安定なので範囲指定
+pandas>=2.0.0
+numpy>=1.24.0
+openpyxl>=3.0.0
+chardet>=5.0.0
+
 streamlit>=1.28.0
 pandas
 numpy
